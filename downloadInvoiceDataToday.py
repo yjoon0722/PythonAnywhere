@@ -37,7 +37,7 @@ else :
     imap_obj = imapclient.IMAPClient('imap.naver.com',ssl=True)
 
     # imap 서버 로그인
-    imap_obj.login('hantongbox@naver.com','hantong0601!')
+    imap_obj.login('id','password')
 
     # imap 서버 메일 폴더 리스트 출력
     # pprint.pprint(imap_obj.list_folders())

@@ -37,7 +37,7 @@ handler = logging.FileHandler('./server.log', mode='a')
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
-HEADERS = {'X-NCP-APIGW-API-KEY-ID': 'spcp5bn0yg', 'X-NCP-APIGW-API-KEY': 'OH39GAWKhXJnJiF42TwVJelYjvqxD54mM2R8XZqe'}
+HEADERS = {'X-NCP-APIGW-API-KEY-ID': 'API-KEY-ID', 'X-NCP-APIGW-API-KEY': 'API-KEY'}
 
 headers = {'Content-Type': 'application/json'}
 
@@ -339,72 +339,9 @@ def direction():
 
     return jsonify()
 
-
-# firestore 실링비닐 검색
-@app.route('/firestore', methods=['POST'])
-def firestore():
-    logger.debug('===================================== \nRequest: %s', request)
-    if request.method == 'POST':
-        content = request.get_json(silent=True)
-
-        name = urllib.parse.unquote(parse.quote(content['name']))
-
-        if not (name):
-            return jsonify({'error': 'No grguments'}), 400
-
-        url = f'https://firestore.googleapis.com/v1/projects/hantongcalcrawl/databases/(default)/documents:runQuery'
-        response = requests.post(url, json={"structuredQuery": {"from": [{"collectionId": "Account"}]}})
-
-        array = []
-
-        try:
-            datas = response.json()
-            for data in datas:
-                document = data['document']
-                account = document['name'].split('/')[-1]
-                if name in account:
-                    array.append({'account': account, 'fields': document['fields']})
-        except Exception as e:
-            logger.debug('Error: firestore ', e)
-
-        return jsonify({'result_code': '0', 'result_count': len(array), 'result_array': array}), response.status_code
-
-    return jsonify()
-
-# firestore 업체 전화번호 검색
-@app.route('/firestore2', methods=['POST'])
-def firestore2():
-    logger.debug('===================================== \nRequest: %s', request)
-    if request.method == 'POST':
-        content = request.get_json(silent=True)
-
-        name = urllib.parse.unquote(parse.quote(content['name']))
-
-        if not (name):
-            return jsonify({'error': 'No grguments'}), 400
-
-        url = f'https://firestore.googleapis.com/v1/projects/hantongcalcrawl/databases/(default)/documents:runQuery'
-        response = requests.post(url, json={"structuredQuery": {"from": [{"collectionId": "AccountPhoneNum"}]}})
-
-        array = []
-
-        try:
-            datas = response.json()
-            for data in datas:
-                document = data['document']
-                account = document['name'].split('/')[-1]
-                if name in account:
-                    array.append({'accountPhoneNum': account, 'fields': document['fields']})
-        except Exception as e:
-            logger.debug('Error: firestore ', e)
-
-        return jsonify({'result_code': '0', 'result_count': len(array), 'result_array': array}), response.status_code
-
-    return jsonify()
-
 # sql connect
 def dbcon():
-    return pymysql.connect(host='intosharp.mysql.pythonanywhere-services.com',user='intosharp',password='09170920App!',db='intosharp$hantongbox',charset='utf8')
+    return pymysql.connect(host='intosharp.mysql.pythonanywhere-services.com',user='userid',password='password',db='dbname',charset='utf8')
 
 # find sales_status in sql
 @app.route('/sales_status', methods=['POST'])
@@ -481,7 +418,7 @@ def search_account():
 
 # Zone값 가져오기
 def get_ecount_zone():
-    post_data = {"COM_CODE":"147270"}
+    post_data = {"COM_CODE":"COM_CODE"}
     url = 'https://oapi.ecount.com/OAPI/V2/Zone'
 
     response = requests.request('POST',url,data = json.dumps(post_data),headers = headers)
@@ -504,9 +441,9 @@ def get_ecount_zone():
 # 로그인 SESSION_ID 받아오기
 def get_ecount_SESSION_ID(ZONE):
     post_data = {
-        "COM_CODE":"147270",
-        "USER_ID":"MASTER09",
-        "API_CERT_KEY":"508df12a5c3384a3387c429e64db334cf0",
+        "COM_CODE":"COM_CODE",
+        "USER_ID":"USER_ID",
+        "API_CERT_KEY":"API-KEY",
         "LAN_TYPE":"ko-KR",
         "ZONE":ZONE
     }
@@ -615,7 +552,7 @@ def send_sms():
             "https://shopapi.allinda.co.kr/api/v1.2/allinda/messages",
             data = json.dumps(content),
             headers = {"Content-Type": "application/json"},
-            cookies = {"sessionid_textory": "zxoboy9frx1wff5jm2l57v4wq1j5i6r0"}
+            cookies = {"sessionid_textory": "sessionid_textory"}
             )
         logger.debug('status code: %s', response.status_code)
         logger.debug('body: %s', response.text)
@@ -645,7 +582,7 @@ def send_sms_userid(user_id):
             "https://shopapi.allinda.co.kr/api/v1.2/allinda/messages",
             data = json.dumps(content),
             headers = {"Content-Type": "application/json"},
-            cookies = {"sessionid_textory": "zxoboy9frx1wff5jm2l57v4wq1j5i6r0"}
+            cookies = {"sessionid_textory": "sessionid_textory"}
             )
         logger.debug('status code: %s', response.status_code)
         logger.debug('body: %s', response.text)
@@ -812,8 +749,8 @@ def sendMail(warehouse):
     logger.debug("goryeo_count = %s",goryeo_count)
 
 
-    sendEmail = "hantongbox@naver.com" # 보내는 계정 이메일
-    password = "hantong0601!" # 보내는 계정 비밀번호
+    sendEmail = "" # 보내는 계정 이메일
+    password = "" # 보내는 계정 비밀번호
     # 실사용시 아래부분 주석해제
     # if warehouse == juntech :
     #     recvEmail = "joontech2016@naver.com" # 받는사람 이메일 (준테크)
